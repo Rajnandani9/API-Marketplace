@@ -3,8 +3,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# Vercel ke liye /tmp folder use karo
-DATABASE_URL = "sqlite:////tmp/marketplace.db"
+# Vercel pe /tmp, local pe current folder
+if os.path.exists("/tmp"):
+    DATABASE_URL = "sqlite:////tmp/marketplace.db"
+else:
+    DATABASE_URL = "sqlite:///./marketplace.db"
 
 engine = create_engine(
     DATABASE_URL,
