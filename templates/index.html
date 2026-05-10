@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Marketplace</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; }
+        nav { background: #1e293b; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; }
+        nav h1 { color: #6366f1; font-size: 22px; }
+        nav div { display: flex; gap: 12px; }
+        .btn { padding: 8px 20px; border-radius: 8px; border: none; cursor: pointer; font-size: 14px; font-weight: 500; }
+        .btn-primary { background: #6366f1; color: white; }
+        .btn-primary:hover { background: #4f46e5; }
+        .btn-outline { background: transparent; color: #6366f1; border: 1px solid #6366f1; }
+        .btn-outline:hover { background: #6366f1; color: white; }
+        .btn-sm { padding: 6px 14px; font-size: 13px; }
+        .hero { text-align: center; padding: 80px 20px 60px; }
+        .hero h2 { font-size: 42px; font-weight: 700; color: #f1f5f9; margin-bottom: 16px; }
+        .hero h2 span { color: #6366f1; }
+        .hero p { font-size: 18px; color: #94a3b8; margin-bottom: 32px; }
+        .section { padding: 40px 32px; max-width: 1100px; margin: 0 auto; }
+        .section h3 { font-size: 22px; margin-bottom: 24px; color: #f1f5f9; }
+        .apis-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .api-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 24px; }
+        .api-card h4 { font-size: 18px; color: #f1f5f9; margin-bottom: 8px; }
+        .api-card p { color: #94a3b8; font-size: 14px; margin-bottom: 16px; }
+        .api-card .price { color: #6366f1; font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+        .api-card .developer { font-size: 12px; color: #64748b; margin-bottom: 16px; }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; align-items: center; justify-content: center; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: #1e293b; border-radius: 16px; padding: 32px; width: 400px; border: 1px solid #334155; }
+        .modal h3 { margin-bottom: 24px; color: #f1f5f9; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 6px; }
+        .form-group input, .form-group select { width: 100%; padding: 10px 14px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #e2e8f0; font-size: 14px; }
+        .form-group input:focus { outline: none; border-color: #6366f1; }
+        .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
+        .alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; display: none; }
+        .alert.success { background: #064e3b; color: #6ee7b7; display: block; }
+        .alert.error { background: #450a0a; color: #fca5a5; display: block; }
+        .dashboard { display: none; }
+        .dashboard.active { display: block; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px; }
+        .stat-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 20px; }
+        .stat-card .value { font-size: 28px; font-weight: 700; color: #6366f1; }
+        .stat-card .label { font-size: 13px; color: #94a3b8; margin-top: 4px; }
+        .empty { text-align: center; color: #64748b; padding: 40px; }
+        .tag { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; background: #1e3a5f; color: #60a5fa; margin-bottom: 8px; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h1>⚡ API Marketplace</h1>
+    <div id="nav-btns">
+        <button class="btn btn-outline" onclick="openModal('login')">Login</button>
+        <button class="btn btn-primary" onclick="openModal('register')">Register</button>
+    </div>
+    <div id="nav-user" style="display:none">
+        <span id="user-name" style="color:#94a3b8; margin-right:12px"></span>
+        <button class="btn btn-outline btn-sm" onclick="showDashboard()">Dashboard</button>
+        <button class="btn btn-sm" style="background:#334155;color:#e2e8f0" onclick="logout()">Logout</button>
+    </div>
+</nav>
+
+<div class="hero" id="hero-section">
+    <h2>Discover & Subscribe to <span>Powerful APIs</span></h2>
+    <p>Browse APIs, subscribe instantly, and start building today.</p>
+    <button class="btn btn-primary" onclick="openModal('register')">Get Started Free</button>
+</div>
+
+<div class="section" id="home-section">
+    <h3>Available APIs</h3>
+    <div class="apis-grid" id="apis-container">
+        <div class="empty">Loading APIs...</div>
+    </div>
+</div>
+
+<div class="section dashboard" id="dashboard-section">
+    <h3 id="dashboard-title">My Dashboard</h3>
+    <div class="stats-grid" id="stats-container"></div>
+    <h3 style="margin-bottom:16px" id="sub-title">My Subscriptions</h3>
+    <div class="apis-grid" id="subs-container"></div>
+</div>
+
+<!-- Login Modal -->
+<div class="modal-overlay" id="login-modal">
+    <div class="modal">
+        <h3>Login</h3>
+        <div class="alert" id="login-alert"></div>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="login-email" placeholder="test@gmail.com">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="login-password" placeholder="••••••">
+        </div>
+        <div class="modal-btns">
+            <button class="btn btn-primary" style="flex:1" onclick="login()">Login</button>
+            <button class="btn btn-outline" onclick="closeModal('login')">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Register Modal -->
+<div class="modal-overlay" id="register-modal">
+    <div class="modal">
+        <h3>Create Account</h3>
+        <div class="alert" id="register-alert"></div>
+        <div class="form-group">
+            <label>Name</label>
+            <input type="text" id="reg-name" placeholder="Your name">
+        </div>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="reg-email" placeholder="you@gmail.com">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="reg-password" placeholder="••••••">
+        </div>
+        <div class="form-group">
+            <label>Role</label>
+            <select id="reg-role">
+                <option value="user">User — Subscribe to APIs</option>
+                <option value="developer">Developer — List APIs</option>
+            </select>
+        </div>
+        <div class="modal-btns">
+            <button class="btn btn-primary" style="flex:1" onclick="register()">Register</button>
+            <button class="btn btn-outline" onclick="closeModal('register')">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add API Modal -->
+<div class="modal-overlay" id="addapi-modal">
+    <div class="modal">
+        <h3>List New API</h3>
+        <div class="alert" id="addapi-alert"></div>
+        <div class="form-group">
+            <label>API Name</label>
+            <input type="text" id="api-name" placeholder="Weather API">
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <input type="text" id="api-desc" placeholder="What does this API do?">
+        </div>
+        <div class="form-group">
+            <label>Base URL</label>
+            <input type="text" id="api-url" placeholder="https://api.example.com">
+        </div>
+        <div class="form-group">
+            <label>Monthly Price (₹)</label>
+            <input type="number" id="api-price" placeholder="99">
+        </div>
+        <div class="modal-btns">
+            <button class="btn btn-primary" style="flex:1" onclick="addAPI()">List API</button>
+            <button class="btn btn-outline" onclick="closeModal('addapi')">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- AI Insights Modal -->
+<div class="modal-overlay" id="insights-modal">
+    <div class="modal" style="width:500px;max-height:80vh;overflow-y:auto">
+        <h3>🤖 AI Insights</h3>
+        <div id="insights-content" style="margin-top:16px"></div>
+        <div class="modal-btns" style="margin-top:24px">
+            <button class="btn btn-outline" style="flex:1" onclick="closeModal('insights')">Close</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+const BASE = 'http://127.0.0.1:8000';
+let token = localStorage.getItem('token');
+let userRole = localStorage.getItem('role');
+let userName = localStorage.getItem('name');
+
+function getHeaders() {
+    return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token };
+}
+function openModal(name) { document.getElementById(name + '-modal').classList.add('active'); }
+function closeModal(name) { document.getElementById(name + '-modal').classList.remove('active'); }
+function showAlert(id, msg, type) {
+    const el = document.getElementById(id);
+    el.textContent = msg;
+    el.className = 'alert ' + type;
+}
+
+async function register() {
+    const body = {
+        name: document.getElementById('reg-name').value,
+        email: document.getElementById('reg-email').value,
+        password: document.getElementById('reg-password').value,
+        role: document.getElementById('reg-role').value
+    };
+    const res = await fetch(BASE + '/auth/register', {
+        method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (res.ok) {
+        token = data.token;
+        localStorage.setItem('token', token);
+        localStorage.setItem('role', data.role);
+        localStorage.setItem('name', body.name);
+        closeModal('register');
+        setLoggedIn(body.name, data.role);
+        loadAPIs();
+    } else { showAlert('register-alert', data.detail, 'error'); }
+}
+
+async function login() {
+    const body = {
+        email: document.getElementById('login-email').value,
+        password: document.getElementById('login-password').value
+    };
+    const res = await fetch(BASE + '/auth/login', {
+        method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (res.ok) {
+        token = data.token;
+        localStorage.setItem('token', token);
+        localStorage.setItem('role', data.role);
+        localStorage.setItem('name', data.name);
+        closeModal('login');
+        setLoggedIn(data.name, data.role);
+        loadAPIs();
+    } else { showAlert('login-alert', data.detail, 'error'); }
+}
+
+function setLoggedIn(name, role) {
+    document.getElementById('nav-btns').style.display = 'none';
+    document.getElementById('nav-user').style.display = 'flex';
+    document.getElementById('nav-user').style.alignItems = 'center';
+    document.getElementById('user-name').textContent = name + ' (' + role + ')';
+    userRole = role; userName = name;
+}
+
+function logout() {
+    localStorage.clear(); token = null;
+    document.getElementById('nav-btns').style.display = 'flex';
+    document.getElementById('nav-user').style.display = 'none';
+    document.getElementById('dashboard-section').classList.remove('active');
+    document.getElementById('home-section').style.display = 'block';
+    document.getElementById('hero-section').style.display = 'block';
+}
+
+async function loadAPIs() {
+    const res = await fetch(BASE + '/apis/');
+    const apis = await res.json();
+    const container = document.getElementById('apis-container');
+    if (apis.length === 0) { container.innerHTML = '<div class="empty">No APIs listed yet.</div>'; return; }
+    container.innerHTML = apis.map(api => `
+        <div class="api-card">
+            <span class="tag">REST API</span>
+            <h4>${api.name}</h4>
+            <p>${api.description}</p>
+            <div class="developer">by ${api.developer}</div>
+            <div class="price">₹${api.price_monthly}/month</div>
+            ${token
+                ? `<button class="btn btn-primary btn-sm" onclick="subscribe(${api.id},'${api.name}',${api.price_monthly})">Subscribe</button>`
+                : `<button class="btn btn-outline btn-sm" onclick="openModal('login')">Login to Subscribe</button>`}
+        </div>`).join('');
+}
+
+async function subscribe(apiId, apiName, price) {
+    const orderRes = await fetch(BASE + '/payments/create-order', {
+        method: 'POST', headers: getHeaders(), body: JSON.stringify({ api_id: apiId })
+    });
+    const orderData = await orderRes.json();
+    if (!orderData.key_id) { alert('Order create nahi hua. Server check karo.'); return; }
+    const options = {
+        key: orderData.key_id,
+        amount: orderData.amount,
+        currency: "INR",
+        name: "API Marketplace",
+        description: apiName + " Subscription",
+        order_id: orderData.order_id,
+        handler: async function(response) {
+            const verifyRes = await fetch(BASE + '/payments/verify', {
+                method: 'POST', headers: getHeaders(),
+                body: JSON.stringify({
+                    api_id: apiId,
+                    razorpay_order_id: response.razorpay_order_id,
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_signature: response.razorpay_signature
+                })
+            });
+            const verifyData = await verifyRes.json();
+            if (verifyData.api_key) {
+                alert('✅ Payment Successful!\n\nAPI Key:\n' + verifyData.api_key + '\n\nSave kar lo!');
+                loadAPIs();
+            } else { alert('❌ Payment verify nahi hua.'); }
+        },
+        prefill: { name: userName || '', email: '' },
+        theme: { color: "#6366f1" }
+    };
+    const rzp = new Razorpay(options);
+    rzp.open();
+}
+
+async function showDashboard() {
+    document.getElementById('home-section').style.display = 'none';
+    document.getElementById('hero-section').style.display = 'none';
+    document.getElementById('dashboard-section').classList.add('active');
+    if (userRole === 'developer') {
+        document.getElementById('dashboard-title').textContent = 'Developer Dashboard';
+        document.getElementById('sub-title').textContent = 'My Listed APIs Analytics';
+        loadDevAnalytics();
+    } else {
+        document.getElementById('dashboard-title').textContent = 'My Dashboard';
+        document.getElementById('sub-title').textContent = 'My Subscriptions';
+        loadMySubscriptions();
+    }
+}
+
+async function loadDevAnalytics() {
+    const res = await fetch(BASE + '/analytics/my-apis', { headers: getHeaders() });
+    const data = await res.json();
+    const stats = document.getElementById('stats-container');
+    const subs = document.getElementById('subs-container');
+    if (data.length === 0) {
+        stats.innerHTML = '';
+        subs.innerHTML = '<div class="empty">No APIs listed yet. <button class="btn btn-primary btn-sm" onclick="openModal(\'addapi\')">List API</button></div>';
+        return;
+    }
+    let totalRevenue = 0, totalCalls = 0, totalSubs = 0;
+    data.forEach(a => { totalRevenue += a.monthly_revenue; totalCalls += a.total_calls; totalSubs += a.total_subscribers; });
+    stats.innerHTML = `
+        <div class="stat-card"><div class="value">₹${totalRevenue}</div><div class="label">Monthly Revenue</div></div>
+        <div class="stat-card"><div class="value">${totalCalls}</div><div class="label">Total API Calls</div></div>
+        <div class="stat-card"><div class="value">${totalSubs}</div><div class="label">Total Subscribers</div></div>
+        <div class="stat-card"><div class="value">${data.length}</div><div class="label">Listed APIs</div></div>
+        <div class="stat-card" style="cursor:pointer;border-color:#6366f1;border-width:2px" onclick="getAIInsights()">
+            <div class="value" style="font-size:28px">🤖</div>
+            <div class="label" style="color:#6366f1;font-weight:600">AI Insights lo</div>
+        </div>`;
+    subs.innerHTML = data.map(a => `
+        <div class="api-card">
+            <h4>${a.api_name}</h4>
+            <p>Calls: ${a.total_calls} | Success: ${a.success_calls}</p>
+            <p>Avg Response: ${a.avg_response_time}s</p>
+            <div class="price">₹${a.monthly_revenue}/month revenue</div>
+        </div>`).join('') + `
+        <div class="api-card" style="border:2px dashed #334155;display:flex;align-items:center;justify-content:center;cursor:pointer;min-height:120px" onclick="openModal('addapi')">
+            <div style="text-align:center;color:#64748b"><div style="font-size:32px">+</div><div>List New API</div></div>
+        </div>`;
+}
+
+async function loadMySubscriptions() {
+    const res = await fetch(BASE + '/subscriptions/my', { headers: getHeaders() });
+    const data = await res.json();
+    const container = document.getElementById('subs-container');
+    document.getElementById('stats-container').innerHTML = `
+        <div class="stat-card"><div class="value">${data.length}</div><div class="label">Active Subscriptions</div></div>`;
+    if (data.length === 0) { container.innerHTML = '<div class="empty">No subscriptions yet.</div>'; return; }
+    container.innerHTML = data.map(s => `
+        <div class="api-card">
+            <h4>${s.api_name}</h4>
+            <div class="developer">API Key:</div>
+            <p style="font-family:monospace;font-size:12px;color:#6366f1;word-break:break-all">${s.api_key}</p>
+        </div>`).join('');
+}
+
+async function addAPI() {
+    const body = {
+        name: document.getElementById('api-name').value,
+        description: document.getElementById('api-desc').value,
+        base_url: document.getElementById('api-url').value,
+        price_monthly: parseFloat(document.getElementById('api-price').value) || 0
+    };
+    const res = await fetch(BASE + '/apis/', { method: 'POST', headers: getHeaders(), body: JSON.stringify(body) });
+    const data = await res.json();
+    if (res.ok) { closeModal('addapi'); loadDevAnalytics(); loadAPIs(); }
+    else { showAlert('addapi-alert', data.detail, 'error'); }
+}
+
+async function getAIInsights() {
+    const content = document.getElementById('insights-content');
+    content.innerHTML = '<p style="color:#94a3b8;text-align:center">⏳ Insights load ho rahi hain...</p>';
+    openModal('insights');
+    const res = await fetch(BASE + '/ai/insights', { headers: getHeaders() });
+    const data = await res.json();
+    if (data.insights) {
+        let html = '<div style="display:flex;flex-direction:column;gap:12px">';
+        data.insights.forEach(i => {
+            html += `<div style="background:#0f172a;border:1px solid #334155;border-radius:8px;padding:14px;font-size:14px;line-height:1.6">${i}</div>`;
+        });
+        html += '</div>';
+        if (data.api_summary) {
+            html += '<h4 style="margin-top:20px;margin-bottom:10px;color:#94a3b8;font-size:13px">API Summary:</h4>';
+            data.api_summary.forEach(a => {
+                html += `<div style="background:#0f172a;border:1px solid #334155;border-radius:8px;padding:12px;font-size:13px;margin-bottom:8px">
+                    <span style="color:#6366f1;font-weight:600">${a.api_name}</span>
+                    <span style="color:#64748b;margin-left:12px">Calls: ${a.total_calls} | Subs: ${a.subscribers} | ₹${a.revenue}/month</span>
+                </div>`;
+            });
+        }
+        html += `<div style="margin-top:16px;padding:12px;background:#064e3b;border-radius:8px;color:#6ee7b7;font-weight:600;text-align:center">💰 Total: ₹${data.total_revenue}/month</div>`;
+        content.innerHTML = html;
+    } else {
+        content.innerHTML = '<p style="color:#fca5a5">Insights nahi mil sake. Dobara try karo.</p>';
+    }
+}
+
+if (token) { setLoggedIn(localStorage.getItem('name'), localStorage.getItem('role')); }
+loadAPIs();
+</script>
+</body>
+</html>
