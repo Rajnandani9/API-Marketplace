@@ -3,13 +3,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-DATABASE_URL = "sqlite:///./marketplace.db"
-
-connect_args = {"check_same_thread": False}
+# Vercel ke liye /tmp folder use karo
+DATABASE_URL = "sqlite:////tmp/marketplace.db"
 
 engine = create_engine(
     DATABASE_URL,
-    connect_args=connect_args
+    connect_args={"check_same_thread": False}
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
