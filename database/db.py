@@ -3,15 +3,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# Vercel pe /tmp, local pe current folder
-if os.path.exists("/tmp"):
-    DATABASE_URL = "sqlite:////tmp/marketplace.db"
-else:
-    DATABASE_URL = "sqlite:///./marketplace.db"
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./marketplace.db")
 
 engine = create_engine(
     DATABASE_URL,
-    connect_args={"check_same_thread": False}
+    connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
