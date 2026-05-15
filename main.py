@@ -11,40 +11,42 @@ cursor = conn.cursor()
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS apis (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    description TEXT NOT NULL
+    name TEXT,
+    description TEXT
 )
 """)
 
 conn.commit()
 
-# Home Route
+
 @app.get("/")
-def home():
+async def home():
     return {
-        "message": "API Marketplace Running Successfully on Vercel 🚀"
+        "status": "success",
+        "message": "API Marketplace Running Successfully 🚀"
     }
 
-# Get All APIs
+
 @app.get("/apis")
-def get_apis():
+async def get_apis():
+
     cursor.execute("SELECT * FROM apis")
-    data = cursor.fetchall()
+    rows = cursor.fetchall()
 
-    apis = []
+    data = []
 
-    for api in data:
-        apis.append({
-            "id": api[0],
-            "name": api[1],
-            "description": api[2]
+    for row in rows:
+        data.append({
+            "id": row[0],
+            "name": row[1],
+            "description": row[2]
         })
 
-    return {"apis": apis}
+    return {"apis": data}
 
-# Add API
+
 @app.post("/add-api")
-def add_api(name: str, description: str):
+async def add_api(name: str, description: str):
 
     cursor.execute(
         "INSERT INTO apis (name, description) VALUES (?, ?)",
