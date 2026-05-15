@@ -1,31 +1,58 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from database.db import engine
-from models.models import Base
-from routers import auth
-from routers import apis
+import sqlite3
 
-Base.metadata.create_all(bind=engine)
+app = FastAPI()
 
-app = FastAPI(title="API Marketplace", version="1.0")
+# Database Connection
+conn = sqlite3.connect("database.db", check_same_thread=False)
+cursor = conn.cursor()
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
+# Create Table
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS apis (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    description TEXT NOT NULL
 )
+""")
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+conn.commit()
 
-app.include_router(auth.router)
-app.include_router(apis.router)
-
+# Home Route
 @app.get("/")
 def home():
-    return {"message": "API Marketplace chal raha hai!"}
+    return {
+        "message": "API Marketplace Running Successfully on Vercel 🚀"
+    }
 
-@app.get("/health")
-def health():
-    return {"status": "ok"}
+# Get All APIs
+@app.get("/apis")
+def get_apis():
+    cursor.execute("SELECT * FROM apis")
+    data = cursor.fetchall()
+
+    apis = []
+
+    for api in data:
+        apis.append({
+            "id": api[0],
+            "name": api[1],
+            "description": api[2]
+        })
+
+    return {"apis": apis}
+
+# Add API
+@app.post("/add-api")
+def add_api(name: str, description: str):
+
+    cursor.execute(
+        "INSERT INTO apis (name, description) VALUES (?, ?)",
+        (name, description)
+    )
+
+    conn.commit()
+
+    return {
+        "message": "API Added Successfully"
+    }
