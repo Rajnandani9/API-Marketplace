@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -35,3 +36,24 @@ def home():
 @app.get("/health")
 def health():
     return {"status": "ok"}
+=======
+from fastapi import FastAPI, Request
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
+
+app = FastAPI()
+
+# Static Files
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# Templates
+templates = Jinja2Templates(directory="templates")
+
+
+@app.get("/")
+async def home(request: Request):
+    return templates.TemplateResponse(
+        "index.html",
+        {"request": request}
+    )
+>>>>>>> 68175c670b8e573bfef8f6f0beca6246581e9c68

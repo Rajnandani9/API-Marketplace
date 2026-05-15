@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 fastapi
 uvicorn
 sqlalchemy
@@ -7,3 +8,8 @@ python-multipart
 httpx
 razorpay
 openai
+=======
+fastapi==0.115.0
+uvicorn==0.30.6
+jinja2
+>>>>>>> 68175c670b8e573bfef8f6f0beca6246581e9c68

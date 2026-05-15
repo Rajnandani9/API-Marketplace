@@ -1,0 +1,79 @@
+body{
+    margin:0;
+    font-family:Arial;
+    background:#020b2d;
+    color:white;
+}
+
+nav{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:20px 40px;
+    background:#14213d;
+}
+
+nav h1{
+    color:#6c63ff;
+}
+
+button{
+    padding:10px 20px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.login{
+    background:transparent;
+    color:white;
+    border:1px solid #6c63ff;
+}
+
+.register{
+    background:#6c63ff;
+    color:white;
+}
+
+.hero{
+    text-align:center;
+    margin-top:100px;
+}
+
+.hero h2{
+    font-size:55px;
+}
+
+.hero span{
+    color:#6c63ff;
+}
+
+.start-btn{
+    background:#6c63ff;
+    color:white;
+    margin-top:20px;
+}
+
+.apis{
+    width:70%;
+    margin:auto;
+    margin-top:80px;
+}
+
+.card{
+    width:300px;
+    background:#1e293b;
+    padding:25px;
+    border-radius:15px;
+}
+
+.tag{
+    background:#2563eb;
+    padding:5px 10px;
+    border-radius:20px;
+    font-size:12px;
+}
+
+.card h4{
+    color:#6c63ff;
+}

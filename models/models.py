@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+models.py
+
+>>>>>>> 68175c670b8e573bfef8f6f0beca6246581e9c68
 from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, ForeignKey, Text
 from sqlalchemy.orm import relationship
 from datetime import datetime

@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+gateway.py
+
+>>>>>>> 68175c670b8e573bfef8f6f0beca6246581e9c68
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 import httpx
