@@ -14,8 +14,8 @@ SECRET_KEY = "marketplace-secret-key-2024"
 ALGORITHM = "HS256"
 security = HTTPBearer()
 
-RAZORPAY_KEY_ID = "rzp_test_SkSMtBwdb6ASEp"
-RAZORPAY_KEY_SECRET = "xv1VrgkNmo92kzgIqXd1C0P6"
+RAZORPAY_KEY_ID = "rzp_test_SmYEIvWeEiBP4p"
+RAZORPAY_KEY_SECRET = "yDBBymR7SdvLLFiS8gKx7BcB"
 
 def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security),
                      db: Session = Depends(get_db)):
