@@ -2,8 +2,8 @@ fastapi
 uvicorn
 sqlalchemy
 python-jose
-passlib
-bcrypt
+passlib[bcrypt]
+bcrypt==4.0.1
 python-multipart
 jinja2
 razorpay
