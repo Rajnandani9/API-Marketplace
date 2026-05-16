@@ -161,3 +161,35 @@ input:focus {
     border: 2px solid #3b82f6;
     box-shadow: 0 0 15px rgba(59,130,246,0.4);
 }
+/* BUTTON HOVER EFFECT */
+
+.btn {
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px) scale(1.05);
+}
+
+.btn-primary:hover {
+    background: #4f46e5;
+    box-shadow: 0 0 25px rgba(99,102,241,0.6);
+}
+
+.btn-outline:hover {
+    background: #6366f1;
+    color: white;
+    box-shadow: 0 0 20px rgba(99,102,241,0.5);
+}
+
+/* API CARD HOVER */
+
+.api-card {
+    transition: all 0.3s ease;
+}
+
+.api-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    border-color: #6366f1;
+}
