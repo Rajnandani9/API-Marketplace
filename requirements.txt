@@ -7,3 +7,4 @@ bcrypt
 python-multipart
 jinja2
 razorpay
+httpx
