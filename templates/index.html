@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>API Marketplace</title>
-<<<<<<< HEAD
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; }
@@ -178,10 +177,33 @@
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
-const BASE = 'https://api-marketplace-iota.vercel.app';
+
+const BASE = '';
+
 let token = localStorage.getItem('token');
 let userRole = localStorage.getItem('role');
 let userName = localStorage.getItem('name');
+
+function getHeaders() {
+    return {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+    };
+}
+
+function openModal(name) {
+    document.getElementById(name + '-modal').classList.add('active');
+}
+
+function closeModal(name) {
+    document.getElementById(name + '-modal').classList.remove('active');
+}
+
+function showAlert(id, msg, type) {
+    const el = document.getElementById(id);
+    el.textContent = msg;
+    el.className = 'alert ' + type;
+}
 
 function getHeaders() {
     return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token };
@@ -414,45 +436,5 @@ async function getAIInsights() {
 if (token) { setLoggedIn(localStorage.getItem('name'), localStorage.getItem('role')); }
 loadAPIs();
 </script>
-=======
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-
-    <nav>
-        <h1>⚡ API Marketplace</h1>
-
-        <div>
-            <button class="login">Login</button>
-            <button class="register">Register</button>
-        </div>
-    </nav>
-
-    <section class="hero">
-        <h2>Discover & Subscribe to <span>Powerful APIs</span></h2>
-        <p>Browse APIs, subscribe instantly, and start building today.</p>
-
-        <button class="start-btn">Get Started Free</button>
-    </section>
-
-    <section class="apis">
-        <h2>Available APIs</h2>
-
-        <div class="card">
-            <span class="tag">REST API</span>
-
-            <h3>Weather API</h3>
-
-            <p>Real time weather data for any city</p>
-
-            <small>by Test User</small>
-
-            <h4>₹99/month</h4>
-
-            <button>Login to Subscribe</button>
-        </div>
-    </section>
-
->>>>>>> 68175c670b8e573bfef8f6f0beca6246581e9c68
 </body>
 </html>
